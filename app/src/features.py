@@ -49,12 +49,9 @@ def _load_spacy(model: str = "en_core_web_sm"):
     
     try:
         import spacy
-        try:
-            _nlp = spacy.load(model)
-        except OSError:
-            # Model not installed - return None to use fallback
-            _nlp = "unavailable"
-    except ImportError:
+        _nlp = spacy.load(model)
+    except Exception:
+        # spacy not available or model not installed - use fallback
         _nlp = "unavailable"
     
     return _nlp
@@ -334,10 +331,10 @@ def classify_lines_as_code(lines: List[str]) -> List[bool]:
 # ═══════════════════════════════════════════════════════════════════════
 
 def file_size_bucket(total_lines: int) -> str:
-    """Classify code into size buckets."""
-    if total_lines <= 50:
+    """Classify code into size buckets (matches training data thresholds)."""
+    if total_lines < 20:
         return "small"
-    elif total_lines <= 200:
+    elif total_lines <= 70:
         return "medium"
     else:
         return "large"

@@ -147,6 +147,12 @@ python -m streamlit run app/app.py
 
 The app extracts 10 semantic features from the code and passes them through the trained classifier. If spaCy is not installed, the app falls back to heuristic-based verb ratio computation.
 
+### Screenshots
+
+![App prediction result - human](docs/screenshots/pic1.png)
+
+![App prediction result - machine-generated](docs/screenshots/pic2.png)
+
 ---
 
 ## Features

@@ -7,40 +7,46 @@ from typing import Any, Dict, List, Tuple
 
 
 # Feature explanations and thresholds
+# Derived from model coefficients:
+#   comments_text_like_ratio_to_total: +2.38 (strongest AI signal)
+#   text_like_ratio:                   +1.18 (strong AI signal)
+#   comment_ratio:                     +0.49 (moderate AI signal)
+#   verb_ratio_comments:               +0.07 (weak AI signal)
+#   comments_code_like_ratio_to_total: -0.05 (very weak human signal)
 FEATURE_EXPLANATIONS = {
     'comment_ratio': {
         'name': 'Comment Density',
         'high_threshold': 0.15,
         'low_threshold': 0.05,
-        'high_human': True,  # High values suggest human
-        'explanation_high': 'Code has substantial comments ({:.1%}), typical of human-written code',
-        'explanation_low': 'Code has few comments ({:.1%}), common in AI-generated snippets',
+        'high_human': False,  # High comment density pushes toward AI (coef +0.49)
+        'explanation_high': 'Code has substantial comments ({:.1%}), common in AI-generated code which tends to be heavily commented',
+        'explanation_low': 'Code has few comments ({:.1%}), more typical of human-written code',
         'explanation_mid': 'Comment density is moderate ({:.1%})',
     },
     'verb_ratio_comments': {
         'name': 'Verb Usage in Comments',
         'high_threshold': 0.15,
         'low_threshold': 0.05,
-        'high_human': True,
-        'explanation_high': 'Comments contain natural language with verbs ({:.1%}), suggesting human authorship',
-        'explanation_low': 'Comments lack verb diversity ({:.1%}), typical of generated code',
+        'high_human': False,  # Slightly pushes toward AI (coef +0.07, weak)
+        'explanation_high': 'Comments contain natural language with verbs ({:.1%}), slightly indicative of AI-generated documentation style',
+        'explanation_low': 'Comments have low verb diversity ({:.1%}), slightly more typical of terse human comments',
         'explanation_mid': 'Verb usage in comments is average ({:.1%})',
     },
     'comments_text_like_ratio_to_total': {
         'name': 'Explanatory Comments',
         'high_threshold': 0.08,
         'low_threshold': 0.02,
-        'high_human': True,
-        'explanation_high': 'Code has explanatory text comments ({:.1%} of lines), common in human code',
-        'explanation_low': 'Few explanatory comments ({:.1%}), often seen in generated code',
+        'high_human': False,  # Strongest AI signal (coef +2.38)
+        'explanation_high': 'Code has explanatory text comments ({:.1%} of lines), a strong indicator of AI-generated code',
+        'explanation_low': 'Few explanatory comments ({:.1%}), more typical of human-written code',
         'explanation_mid': 'Explanatory comment ratio is moderate ({:.1%})',
     },
     'comments_code_like_ratio_to_total': {
         'name': 'Code-like Comments',
         'high_threshold': 0.05,
         'low_threshold': 0.01,
-        'high_human': False,  # High values suggest AI (commented-out code)
-        'explanation_high': 'Contains code-like comments ({:.1%}), sometimes seen in AI output',
+        'high_human': True,  # Slightly pushes toward human (coef -0.05, very weak)
+        'explanation_high': 'Contains code-like comments ({:.1%}), slightly more common in human-written code',
         'explanation_low': 'Few code-like comments ({:.1%})',
         'explanation_mid': 'Code-like comment ratio is typical ({:.1%})',
     },
@@ -48,9 +54,9 @@ FEATURE_EXPLANATIONS = {
         'name': 'Natural Language Content',
         'high_threshold': 0.20,
         'low_threshold': 0.05,
-        'high_human': True,
-        'explanation_high': 'Contains significant natural language ({:.1%}), typical of documented code',
-        'explanation_low': 'Mostly pure code with little text ({:.1%})',
+        'high_human': False,  # Strong AI signal (coef +1.18)
+        'explanation_high': 'Contains significant natural language ({:.1%}), common in AI-generated code with verbose documentation',
+        'explanation_low': 'Mostly pure code with little text ({:.1%}), more typical of human-written code',
         'explanation_mid': 'Natural language ratio is moderate ({:.1%})',
     },
 }
